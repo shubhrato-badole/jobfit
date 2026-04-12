@@ -1,17 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
 const ScoreCard = () => {
   const [score, setScore] = useState(0)
   const [barsLoaded, setBarsLoaded] = useState(false)
-  const cardRef = useRef(null)
 
   useEffect(() => {
     const t = setTimeout(() => {
       let n = 0
       const iv = setInterval(() => {
         n += 2
-        if (n >= 78) { setScore(78); clearInterval(iv) }
+        if (n >= 75) { setScore(75); clearInterval(iv) }
         else setScore(n)
       }, 18)
       setBarsLoaded(true)
@@ -19,29 +18,12 @@ const ScoreCard = () => {
     return () => clearTimeout(t)
   }, [])
 
-  const tilt = (e) => {
-    const el = cardRef.current
-    if (!el) return
-    const r = el.getBoundingClientRect()
-    const rotY = (((e.clientX - r.left) / r.width) - 0.5) * 14
-    const rotX = -(((e.clientY - r.top) / r.height) - 0.5) * 10
-    el.style.transform = `perspective(800px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(1.02)`
-  }
-
-  const reset = () => {
-    if (cardRef.current)
-      cardRef.current.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)'
-  }
-
   return (
     <div
-      ref={cardRef}
-      onMouseMove={tilt}
-      onMouseLeave={reset}
-      className="bg-white border border-gray-200 rounded-2xl p-5 w-60 transition-transform duration-100 select-none"
+      className="bg-white border border-gray-200 rounded-2xl p-5 w-64 select-none"
       style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.08)' }}
     >
-      <p className="text-xs text-gray-400 mb-1">Match score</p>
+      <p className="text-gray-400 text-xs mb-1">Match score</p>
       <div className="flex items-end gap-1 mb-0.5">
         <span className="text-4xl font-semibold text-gray-900 tabular-nums">{score}</span>
         <span className="text-base text-gray-400 mb-1">/ 100</span>
@@ -55,7 +37,8 @@ const ScoreCard = () => {
       ].map(s => (
         <div key={s.l} className="mb-2.5">
           <div className="flex justify-between text-xs text-gray-500 mb-1">
-            <span>{s.l}</span><span>{s.p}%</span>
+            <span>{s.l}</span>
+            <span>{s.p}%</span>
           </div>
           <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
             <div
@@ -92,44 +75,53 @@ const FAQItem = ({ q, a }) => {
 }
 
 const Home = () => (
-  <div className="min-h-screen bg-white">
+  <div className="bg-white">
 
     {/* HERO */}
-    <section className="max-w-6xl mx-auto px-4 pt-16 pb-20 flex flex-col md:flex-row items-center gap-12">
-      <div className="flex-1 max-w-lg">
+    <section className="max-w-6xl mx-auto px-8 pt-20 pb-28 min-h-[88vh] flex flex-col md:flex-row items-center gap-16">
+      <div className="flex-1">
         <div className="inline-flex items-center gap-2 text-xs text-gray-500 border border-gray-200 rounded-full px-3 py-1.5 mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
           AI-powered job matching — free during beta
         </div>
+
         <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 leading-tight tracking-tight mb-5">
           Know exactly{' '}
           <span className="text-blue-600">why you're not</span>{' '}
           getting callbacks.
         </h1>
+
         <p className="text-base text-gray-500 leading-relaxed mb-8">
-          Upload your resume once. Search real jobs. Get an AI match score that shows exactly
-          which skills are missing — and what to do about it.
+          Upload your resume once. Search real jobs. Get an AI match score that shows
+          exactly which skills are missing — and what to do about it.
         </p>
+
         <div className="flex flex-col sm:flex-row gap-3">
-          <Link to="/register"
-            className="px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-700 transition-colors text-center">
+          <Link
+            to="/register"
+            className="px-6 py-3 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-700 transition-colors text-center"
+          >
             Analyze your resume free →
           </Link>
-          <a href="#how"
-            className="px-6 py-3 border border-gray-200 text-gray-600 text-sm rounded-xl hover:bg-gray-50 transition-colors text-center">
+          <a
+            href="#how"
+            className="px-6 py-3 border border-gray-200 text-gray-600 text-sm rounded-xl hover:bg-gray-50 transition-colors text-center"
+          >
             See how it works
           </a>
         </div>
-        <p className="text-xs text-gray-400 mt-4">No credit card. Cancel any time.</p>
+
+        <p className="text-gray-400 text-xs mt-4">No credit card. Cancel any time.</p>
       </div>
+
       <div className="flex-1 flex justify-center">
         <ScoreCard />
       </div>
     </section>
 
     {/* STATS */}
-    <div className="border-y border-gray-100 bg-gray-50 py-5">
-      <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center gap-10">
+    <div className="border-y border-gray-100 bg-gray-50 py-6">
+      <div className="max-w-6xl mx-auto px-8 flex flex-wrap justify-center gap-20">
         {[
           { n: '12,000+', l: 'Resumes analyzed' },
           { n: '87%',     l: 'Avg match improvement' },
@@ -145,8 +137,10 @@ const Home = () => (
     </div>
 
     {/* HOW IT WORKS */}
-    <section id="how" className="max-w-6xl mx-auto px-4 py-20">
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-3">How it works</p>
+    <section id="how" className="max-w-6xl mx-auto px-8 py-20">
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-3">
+        How it works
+      </p>
       <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 text-center tracking-tight mb-12">
         From resume to offer in 3 steps
       </h2>
@@ -167,7 +161,7 @@ const Home = () => (
 
     {/* FEATURES */}
     <section id="features" className="border-t border-gray-100 bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-20">
+      <div className="max-w-6xl mx-auto px-8 py-20">
         <h2 className="text-2xl font-semibold text-gray-900 text-center tracking-tight mb-10">
           Everything you need to job hunt smarter
         </h2>
@@ -190,16 +184,18 @@ const Home = () => (
     </section>
 
     {/* CTA */}
-    <section className="max-w-6xl mx-auto px-4 py-20">
+    <section className="max-w-6xl mx-auto px-8 py-20">
       <div className="bg-gray-900 rounded-2xl px-8 py-12 text-center">
-        <h2 className="text-2xl md:text-3xl font-semibold text-white tracking-tight mb-3">
+        <h2 className="text-2xl md:text-3xl text-white font-semibold mb-3 tracking-tight">
           Stop applying in the dark.
         </h2>
         <p className="text-sm text-gray-400 mb-8 max-w-sm mx-auto">
           Join thousands of job seekers who know exactly what it takes to get hired.
         </p>
-        <Link to="/register"
-          className="inline-block px-8 py-3 bg-white text-gray-900 text-sm font-semibold rounded-xl hover:bg-gray-100 transition-colors">
+        <Link
+          to="/register"
+          className="inline-block bg-white px-8 py-3 rounded-xl text-gray-900 font-semibold text-sm hover:bg-gray-100 transition-colors"
+        >
           Get started for free →
         </Link>
       </div>
@@ -207,8 +203,10 @@ const Home = () => (
 
     {/* FAQ */}
     <section id="faq" className="border-t border-gray-100 bg-gray-50">
-      <div className="max-w-2xl mx-auto px-4 py-20">
-        <h2 className="text-2xl font-semibold text-gray-900 text-center mb-10">Frequently asked questions</h2>
+      <div className="max-w-2xl mx-auto px-8 py-20">
+        <h2 className="text-2xl font-semibold text-gray-900 text-center mb-10">
+          Frequently asked questions
+        </h2>
         <FAQItem q="Is JobFit really free?" a="Yes — JobFit is completely free during beta. We may introduce a paid plan later but all current users get a generous free tier." />
         <FAQItem q="How does the AI match score work?" a="You upload your resume once. When you find a job, our AI compares your skills and experience against the job description and returns a match percentage plus exactly which skills are missing." />
         <FAQItem q="Where do the job listings come from?" a="We pull real listings from LinkedIn, Indeed, and Glassdoor via the JSearch API. Results are updated daily and include full job descriptions and direct apply links." />
@@ -216,6 +214,7 @@ const Home = () => (
         <FAQItem q="Can I use JobFit on mobile?" a="Yes, JobFit is fully responsive and works on any device." />
       </div>
     </section>
+
   </div>
 )
 

@@ -22,13 +22,13 @@ const Login = () => {
 
 
     const handleChange = (e) => {
-       
-            setForm(prev => ({
-                ...prev,
-                [e.target.name]: e.target.value
-            }))
-            setServerError('')
-        
+
+        setForm(prev => ({
+            ...prev,
+            [e.target.name]: e.target.value
+        }))
+        setServerError('')
+
 
 
     }
@@ -131,4 +131,4 @@ const Login = () => {
 }
 
 
-export default Login ;
+export default Login;

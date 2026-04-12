@@ -11,8 +11,8 @@ import JobSearch from "./pages/JobSearch"
 import Analysze from "./pages/Analysze"
 import Tracker from "./pages/Tracker"
 import Profile from "./pages/Profile"
-import Footer from "./components/Footer"
-import Navbar from "./components/Navebar"
+import Footer from "./Components/Footer"
+import Navbar from "./Components/navebar"
 
 
 
