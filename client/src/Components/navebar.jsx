@@ -76,7 +76,7 @@ return (
 
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
    <div className=" w-full flex felx-centre px-10 h-20 gap-6">
-    <Link to="/" className="text-gary-900 text-xl mt-6 font-semibold">Job <span className="text-blue-600">Fit</span></Link>
+    <Link to="/" className="text-gary-900 text-xl mt-6 font-semibold">Job<span className="text-blue-600">Fit</span></Link>
    <div className="flex item-center gap-6 flex-1">
 <div className="flex items-center gap-6 flex-1">
           <a href="#how" className="text-ml text-gray-500 hover:text-gray-900">

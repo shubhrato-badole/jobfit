@@ -1,8 +1,8 @@
 import React from "react"
-import { useState } from "react"
-import { Link, useNavigate, useLocation } from 'react'
+import { useState  } from "react"
+import { Link , useNavigate, useLocation} from "react-router-dom";
 import { useAuth } from './AuthContext'
-import axios, { formToJSON } from 'axios'
+import axios  from 'axios'
 import API from "../components/Api"
 
 
@@ -28,19 +28,15 @@ const Login = () => {
             [e.target.name]: e.target.value
         }))
         setServerError('')
-
-
-
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
-
         try {
             const { data } = await API.post("/api/auth/login", Form)
-            navigate(from)
             Login(data.user)
+            navigate(from)
         } catch (err) {
             setServerError(
                 err.response?.data?.error || 'Login failed. Please try again.'
@@ -51,8 +47,8 @@ const Login = () => {
     }
 
 
-
-    <div>
+return(
+    <div className="flex felx-col item-center justify-center">
         <div>
             <div>
                 <p>job <span>fit</span></p>
@@ -82,7 +78,7 @@ const Login = () => {
 
             {error && (
                 <div className="mb-4 px-3 py-2.5 bg-red-50 border border-red-100 rounded-lg text-sm text-red-600">
-                    {error}
+                    {serverError}
                 </div>
             )}
 
@@ -128,6 +124,7 @@ const Login = () => {
             </p>
         </div>
     </div>
+)
 }
 
 

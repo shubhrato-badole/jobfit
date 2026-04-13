@@ -77,8 +77,8 @@ const FAQItem = ({ q, a }) => {
 const Home = () => (
   <div className="bg-white">
 
-    {/* HERO */}
-    <section className="max-w-6xl mx-auto px-8 pt-15 pb-25 min-h-[80vh] flex flex-col md:flex-row items-center gap-16">
+   
+    <section   className="max-w-6xl mx-auto px-8 pt-15 pb-25 min-h-[80vh] flex flex-col md:flex-row items-center gap-16">
       <div className="flex-1">
         <div className="inline-flex items-center gap-2 text-xs text-gray-500 border border-gray-200 rounded-full px-3 py-1.5 mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
@@ -119,7 +119,7 @@ const Home = () => (
       </div>
     </section>
 
-    {/* STATS */}
+
     <div className="border-y border-gray-100 bg-gray-50 py-6">
       <div className="max-w-6xl mx-auto px-8 flex flex-wrap justify-center gap-20">
         {[
@@ -136,7 +136,7 @@ const Home = () => (
       </div>
     </div>
 
-    {/* HOW IT WORKS */}
+   
     <section id="how" className="max-w-6xl mx-auto px-8 py-20">
       <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider text-center mb-3">
         How it works

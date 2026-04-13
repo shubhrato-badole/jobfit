@@ -1,5 +1,5 @@
 import React from "react"
-import {BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import {BrowserRouter, Routes, Route,} from "react-router-dom"
 import {AuthProvider, useAuth} from "./pages/AuthContext"
 import ProtectedRoute from "./pages/protectedRoutes"
 import Home from "./pages/Home"
@@ -11,7 +11,7 @@ import JobSearch from "./pages/JobSearch"
 import Analysze from "./pages/Analysze"
 import Tracker from "./pages/Tracker"
 import Profile from "./pages/Profile"
-import Footer from "./Components/Footer"
+import Footer from "./components/Footer"
 import Navebar from "./components/Navebar"
 
 
@@ -34,8 +34,8 @@ return(
 
 
       <Route path="/" element={<Home />}></Route>
-      <Route path="/login" element={ user ? <Login/> : <Dashboard/>}></Route>
-      <Route path="/register" element={user ? <Register/> : <Dashboard/>}></Route>
+      <Route path="/login" element={ user ? <Dashboard/> : <Login/> }></Route>
+      <Route path="/register" element={user ?  <Dashboard/> :<Register/>}></Route>
 
       <Route path="/onboarding" element= {<ProtectedRoute> <Onboarding/> </ProtectedRoute> }/>
       <Route path="/Dashboard" element= {<ProtectedRoute> <Dashboard/> </ProtectedRoute> }/>
