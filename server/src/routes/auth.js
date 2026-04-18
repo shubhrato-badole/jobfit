@@ -13,7 +13,6 @@ const cookies_options = ({
     httpOnly: true,
   secure:   false,
   sameSite: 'strict',
-  maxAge:    30 * 60 * 1000,
 })
 
 
@@ -134,8 +133,6 @@ const user = rows[0]
 
 
 if (!user) {
-      res.clearCookie('accessToken')
-      res.clearCookie('refreshtoken')
       return res.status(401).json({ error: 'User not found' })
     }
 res.json({

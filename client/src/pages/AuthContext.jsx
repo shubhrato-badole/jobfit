@@ -1,6 +1,6 @@
-import React from "react"
-import{useState , useContext , createContext , useEffect} from "react"
-import API from "../components/Api"
+import{ React , useContext , useEffect , useState  , createContext } from "react"
+// import{  } from "react-router-dom"
+import API from "../Components/Api"
 
 
 
@@ -8,7 +8,7 @@ const AuthContext =createContext(null);
 
 export const AuthProvider =   ({children}) => {
  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
 const checkAuth = async () => {
@@ -20,8 +20,9 @@ const checkAuth = async () => {
     }finally{
         setLoading(false)
     }
-    checkAuth();
+    
 } 
+checkAuth();
   } , [])
 
 const Login = (userData) => setUser(userData)
