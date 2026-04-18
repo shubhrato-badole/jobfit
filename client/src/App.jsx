@@ -40,7 +40,7 @@ return(
       <Route path="/onboarding" element= {<ProtectedRoute> <Onboarding/> </ProtectedRoute> }/>
       <Route path="/Dashboard" element= {<ProtectedRoute> <Dashboard/> </ProtectedRoute> }/>
       <Route path="/JobSearch" element= {<ProtectedRoute> <JobSearch/> </ProtectedRoute> }/>
-      <Route path="/Analysze" element= {<ProtectedRoute> <Analysze/> </ProtectedRoute> }/>
+      <Route path="/analyze" element= {<ProtectedRoute> <Analysze/> </ProtectedRoute> }/>
      <Route path="/Tracker" element= {<ProtectedRoute> <Tracker/> </ProtectedRoute> }/>
       <Route path="/Profile" element= {<ProtectedRoute> <Profile/> </ProtectedRoute> }/>
     </Routes>
