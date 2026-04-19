@@ -5,6 +5,10 @@ import API from "../Components/Api"
 
 
 
+const scoreColor = (s) =>
+  s >= 75 ? 'text-green-600' :
+  s >= 50 ? 'text-amber-600' :
+  'text-red-500'
 
 const Analysze = () => {
 
@@ -13,7 +17,7 @@ const location = useLocation();
 
 
 const jobData = location.state || {}
-const [from , setForm] = useState({
+const [form , setForm] = useState({
     company : jobData.compnay || '',
     role : jobData.role || '',
     jobDesc : jobData.jobDesc || ''
@@ -21,9 +25,27 @@ const [from , setForm] = useState({
 })
 
 const  [error , setError]= useState('');
-const [status , setStatus]= useState('ideal');
-const [result , setResult] = useState();
+const [status , setStatus]= useState('idle');
+const [result , setResult] = useState([]);
 const [saved , setSaved]= useState(false);
+const [Result , setRResult] = useState({
+  matchScore: 85 ,
+  missingSkill:["TypeScript generics",
+  "Next.js App Router",
+  "Cypress E2E testing",
+  "WebSocket real‑time updates"] ,
+
+  strengths: ["React component architecture",
+  "Responsive CSS with Tailwind",
+  "REST API integration",
+  "Debugging with DevTools",
+  "Clear documentation"],
+
+  suggestion:["Add TypeScript to a side project, focusing on component props and API responses.",
+  "Write a single unit test for your most used utility function using Jest.",
+  "Quantify the impact of one past project on your resume .",
+  "Prepare a 2‑minute explanation of how you'd implement the main feature described in this JD."],
+})
 
 const handleChnage = (e) =>{
     setForm(prev => {
@@ -45,7 +67,7 @@ const handleSubmit = async ()  =>{
 
 
     try{
-        const {data} = await API.post("/api/ai/analyze" , from)
+        const {data} = await API.post("/api/ai/analyze" , form)
         setResult(data)
         setStatus('done')
     }catch(err){
@@ -62,10 +84,13 @@ const hnadleReAnalyzing = () =>{
     setStatus('ideal')
 
 }
+
+
 return(
 <div className="max-w-2xl mx-auto px-6 py-10 ">  {/* main div for screen */}
 
- <div >     {/* div for card */}
+ <div className="bg-white "> 
+      {/* div for card */}
      <div className="mb-7">
         <h2 className="text-xl font-semibold text-gray-900 mb-1 ">Analyze a job</h2>
         <p className="text-sm text-gray-500">Paste any job description and get your AI match score instantly.</p>
@@ -73,32 +98,38 @@ return(
 
     { status !== 'done' && 
       
-      <div>
-        <div>
-            <div>
-        <label>Company name</label>
+      <div className="bg-white border border-gray-200 rounded-2xl p-6" >
+        <div className="grid grid-cols-2 gap-4 mb-4">
+       <div >
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Company name</label>
         <input type="text" 
         name="company"
         placeholder="compnay"
          onChange={handleChnage}
-         value={from.company}/>
-
-         <label>Role</label>
+         value={form.company}
+        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400 transition-colors"/>
+        </div>
+       <div>
+         <label className="block text-sm font-medium text-gray-700 mb-1.5">Role</label>
         <input type="text" 
         name="role"
         placeholder="Frontend Developer"
          onChange={handleChnage}
-         value={from.role}/>
-        </div>
-        </div>
+         value={form.role}
+         className=" w-full placeholder-gray-400 
+         text-xs border border-gray-200 text-gray-900 
+          px-5 py-3 rounded-xl font-medium outline-none focus:border-blue-400 transition-colors"/>
+         </div>
+  
+     </div>
 
         <div>
-         <label>Job description</label>
+         <label className="block text-xs font-medium text-gray-700 mb-1.5">Job description</label>
         <textarea 
         name="jobDesc"
         placeholder="Paste the full job description here..."
          onChange={handleChnage}
-         value={from.jobDesc} 
+         value={form.jobDesc} 
          rows={8}/>
 
          <p className="text-xs text-gray-400 mt-1">
@@ -127,27 +158,117 @@ return(
               </>
               </div>) : 'Analyze match' }
              </button>
-              <p className="text-xs text-gray-400 text-center mt-2">
-            Uses your uploaded resume · AI-powered by Gemini
-          </p>
+              
 
       </div>
 }
 
-       {status === 'done' && result && ( <div>
-          
-      </div>  ) }
-       
+
+       {status === 'done' &&  (
+         <div>
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 mb-4 flex items-center gap-5">
+            <div >
+              <p className="text-xs text-gray-600 mb-2">Match score </p>
+                <span className={`text-5xl font-semibold tabular-nums ${scoreColor(result.matchScore)}`}>{75}</span>
+               <span className="text-xl text-gray-500 ml-1">/100</span>
+             
+            </div>
+
+
+            <div className="flex-1">
+              <p className=" text-sm font-medium text-gray-900 mb-2 "> company fullsatckdeveloper </p>
+            
+            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+
+              <div
+                  className={`h-full rounded-full transition-all duration-700 ${
+                    Result.matchScore >= 75 ? 'bg-green-500' :
+                    Result.matchScore >= 50 ? 'bg-amber-400' :
+                    'bg-red-400'
+                  }`}
+                  style={{ width: `${Result.matchScore}%` }}
+                />
+            </div>
+            <p className="text-xs text-gray-500 mt-1.5">
+                {Result.matchScore >= 75 ? 'Strong match — apply with confidence' :
+                 Result.matchScore >= 50 ? 'Decent match — close some skill gaps first' :
+                 'Weak match — significant skills missing'}
+              </p>
+              </div>
+          </div>
      
+       
+       
+
+       <div  className="grid grid-cols-2 gap-4 mb-4">
+        <div className="bg-white border border-gray-200 rounded-xl p-4 ">
+          <p className=" text-sm font-medium text-gray-400 uppercase tracking-wide mb-3">MISSING SKILLS</p> 
+          {Result.missingSkill.length === 0 ? <p className="text-xs text-gray-400">No critical gaps found</p>
+          : 
+           <div className="flex flex-wrap gap-1.5">
+          {Result.missingSkill.map(s =>(
+            <div key={s} className="text-xs text-red-600 border border-red-100 font-medium bg-red-100 px-2.5 py-1 rounded-xl ">{s}
+            </div>
+          ))} </div>} 
+          </div>
+
+
+        <div className="bg-white border border-gray-200 rounded-xl p-4">
+          <p className=" text-sm font-medium text-gray-400 uppercase tracking-wide mb-3">YOUR STRENGTHS</p>
+          {Result.strengths.length=== 0 ? 'No matches found' : 
+          <div className="flex flex-wrap gap-1.5">
+         { Result.strengths.map(s =>(
+            <div className="text-xs text-green-700 bg-green-50 px-2.5 py-1 rounded-xl fotn-medium border border-green-100" key={s}>{s}</div>
+          ))}
+          </div>
+          } 
+          
+        </div>
+       </div>
+       
+
+
+       <div className="bg-white border border-gray-200 p-5 rounded-xl mb-5">
+        <p className="mb-4 text-sm text-gray-400 font-medium uppercase tracking-wide">HOW TO IMPROVE</p>
+        {Result.suggestion.map ((s , i) => (
+          <div className="flex gap-2 text-sm text-gray-600 leading-relaxed" key={i}><span className="w-5 h-5 bg-gray-100 rounded-full flex items-center justify-center text-xs font-medium text-gray-500 shrink-0 mt-0.5">{i+1}</span>{s}</div>
+        ))}
+        </div>
+
+          {error && 
+           <div> {error}</div>}
+
+{saved ? 
+<div className="text-center bg-gray-200 px-5 py-3 rounded-xl">
+   <div className="inline-flex items-center justify- gap-2 px-5 py-3 bg-green-50 border border-green-200 rounded-sm text-xl text-green-700 font-medium mb-3 ">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M3 8l4 4 6-6" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Saved to tracker as Applied
+                  </div>
+
+  <div className="flex gap-3">
+  <button className="bg-gray-900 flex-1 px-5 py-3 text-white font-medium rounded-xl hover:bg-gray-700 transition-colors "
+ onClick={() => navigate('/tracker')}>View tracker</button>
+  <button className="flex-1 bg-gray-900 px-5 py-3 text-white font-medium rounded-xl hover:bg-gray-700 transition-colors">Analyze another</button>
+</div>
+</div>
+: 
+<div className="flex gap-3">
+  <button className="flex-1 text-sm bg-gray-900 px-3 py-2 rounded-xl text-white font-semibold 
+  hover:bg-gray-700 transition-colors "> Save to tracker</button>
+  <button className="flex-1 text-sm bg-gray-900 px-3 py-2 rounded-xl text-white font-semibold 
+   hover:bg-gray-700 transition-colors">Analyze another</button>
+
+</div> }
+ </div>  ) }
     
-    
-              
+  
 
 
-
-
-
-
+<p className="text-xs text-gray-600 text-center mt-4">
+            Uses your uploaded resume · AI-powered by Gemini
+          </p>
 
  </div>     {/* div for card */}
 
@@ -159,13 +280,6 @@ return(
 
 
 )
-
-
-
-
-
-
-
 
 }
 
