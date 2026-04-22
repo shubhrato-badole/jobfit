@@ -1,34 +1,97 @@
 import { useState, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import API from "../Components/Api"
+import { useEffect } from "react";
 
+
+
+
+
+
+
+
+const ScoreRing = ({score}) =>{
+  const color = score >=75 ? '#16a34a' :  score >= 50 ? '#d97706' : '#dc2626'
+  const label = score >=75 ?' Strong resume' : score >=50 ?  'Decent resume' : 'Needs work'
+return(
+  <div className="flex flex-col items-center">
+     <div className="relative w-24 h-24 mb-2">
+        <svg width="96" height="96" viewBox="0 0 96 96">
+          <circle cx="48" cy="48" r="40" fill="none" stroke="#f3f4f6" strokeWidth="8"/>
+          <circle
+            cx="48" cy="48" r="40"
+            fill="none"
+            stroke={color}
+            strokeWidth="8"
+            strokeLinecap="round"
+            strokeDasharray={`${2 * Math.PI * 40}`}
+            strokeDashoffset={`${2 * Math.PI * 40 * (1 - score / 100)}`}
+            transform="rotate(-90 48 48)"
+            style={{ transition: 'stroke-dashoffset 1s ease' }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-2xl font-semibold text-gray-900">{score}</span>
+          <span className="text-xs text-gray-400">/ 100</span>
+        </div>
+     </div>
+     <span className="text-sm font-medium" style={{ color }}>{label}</span>
+  </div>
+)
+}
 
 
 
 const OnBoarding = () => {
+  
 
   const navigate = useNavigate();
   const fileInputRef = useRef();
-
   const [file, setFile] = useState(null);
-  const [error, seterror] = useState('');
+  const [error, setError] = useState('');
   const [Dragging, setDragging] = useState(false);
-  const [Status, setStatus] = useState('');
+  const [Status, setStatus] = useState('done');
+  const [result, setResult] = useState(
+  );
+
+
+useEffect(()=>{
+  const checkExisting = async ()=>{
+    try{
+    const {data} = await API.get("/api/resume/status")
+    if(data.hasResume && data.score){
+      setResult({
+            score:       data.score,
+            strong:      data.feedback?.strong      || [],
+            improve:     data.feedback?.improve     || [],
+            targetRoles: data.targetRoles || [],
+          })
+           setStatus('done')
+    }
+    }catch(err){
+
+    }
+  }
+  checkExisting()
+},[])
+
+
+
 
   const handleFile = (selected) => {
     if (!selected) return
     if (selected.type !== 'application/pdf') {
-      seterror("the file should be pdf")
+      setError("the file should be pdf")
       return
     }
 
 
     if (selected.size > 5 * 1024 * 1024) {
-      seterror("the file should be below 5mb")
+      setError("the file should be below 5mb")
       return
     }
     setFile(selected);
-    seterror('')
+    setError('')
   }
 
   const handleDrop = (e) => {
@@ -41,26 +104,33 @@ const OnBoarding = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!file) {
-      seterror('Please select a PDF file first')
+      setError('Please select a PDF file first')
       return
     }
     setStatus('uploading')
-    seterror('')
+    setError('')
 
     const formData = new FormData()
     formData.append('resume', file)
 
 
     try {
-      const result = await API.post("/auth/resume/upload", formData, {
+      const analyzeTimer = settimeout(()=> setStatus('analyzing'), 1500)
+      const result = await API.post("/api/resume/upload", formData, {
         headers: { "Content-Type": 'multipart/form-data' }
       })
+     clearTimeout(analyzeTimer)
       setStatus('done')
-      setTimeout(() => navigate('/dashboard'), 1200)
+      setResult({
+        score: result.score ,
+        strong: result.strong || [],
+        improve: result.improve || [],
+        targetRoles: result.targetRoles || [],
+      })
     }
     catch (err) {
       setStatus('error')
-      seterror(err.response?.data?.error || 'Upload failed. Please try again.')
+      setError(err.response?.data?.error || 'Upload failed. Please try again.')
 
     }
   }
@@ -69,17 +139,13 @@ const OnBoarding = () => {
 
   return (
 
-    <div className=" min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8">
-      <div className="mb-10 ">
-        <p className="text-gray-900 text-[25px] font-semibold">Job<span className="text-blue-600">Fit</span></p>
+
+    <div className=" min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-10">
+      <div className="text-xl font-semibold tracking-tight mb-6">
+        Job<span className="text-blue-600">Fit</span>
       </div>
 
-
-
-
-
-
-
+        {Status !== 'done' && 
       <div className="flex items-center gap-2 mb-10 ">
         {[
           { n: 1, label: 'Account', state: 'done' },
@@ -105,46 +171,14 @@ const OnBoarding = () => {
           </div>
         ))}
       </div >
+}
 
 
+{Status !== 'done' &&  <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8">
+    
+     
 
-
-
-
-
-
-
-
-
-      <div className="w-full max-w-md bg-white rounded-2xl border border-gray-200 p-8">
-
-     { Status === 'done'?( <div className="text-center py-6">
-      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <path d="M4 11l5 5 9-9" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-       </svg>
-       </div>
-        
-        <div>
-          <h2 className="text-base text-gray-900 font-semibold mb-1 ">Resume uploaded</h2>
-          <p className="text-sm text-gray-500">Redirecting to your dashboard...</p>
-        </div>
-           
-     </div>)  
-
-
-
-
-
-
-
-
-
-
-
-
-
-      : Status === 'uploading' ?
+      { Status === 'uploading' &&
       ( <div> <h2>Uploading your resume</h2>
            <p className="mb-5">Extracting your skills and experience — this takes a few seconds.</p>
            
@@ -162,20 +196,54 @@ const OnBoarding = () => {
               <p className="text-xs text-gray-400">Extracting text from PDF...</p>
 </div>
 <button disabled className=" px-2.5 py-2  cursor-not-allowed rounded-xl bg-gray-800 text-white w-full font-semibold ">  Processing...</button>
-       </div> ) : (
+       </div> ) }
+
+
+{Status === 'analyzing' &&  (
+                <div>
+              <div>
+               <h1 className="text-xl text-gary-900 font-semibold mb-1 ">Analyzing your resume</h1>
+                <p className="text-xs text-gray-500  mb-6 leading-relaxed">AI is reviewing your resume quality and finding the best roles for you...</p>
+              </div> 
+                <div className="flex flex-col items-center py-4">
+            <div className="relative w-20 h-20 mb-5">
+              <div className="absolute inset-0 rounded-full border-4 border-blue-100 animate-ping opacity-40" />
+              <div className="absolute inset-2 rounded-full border-4 border-blue-200 animate-ping opacity-40" style={{ animationDelay: '0.3s' }} />
+              <div className="w-full h-full rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center">
+                <svg className="animate-spin w-7 h-7 text-blue-500" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="#dbeafe" strokeWidth="3"/>
+                  <path d="M12 2a10 10 0 0110 10" stroke="#3b82f6" strokeWidth="3" strokeLinecap="round"/>
+                </svg>
+            </div>
+           </div>
+
+
+            <div className="space-y-2 w-full">
+              {[
+                { label: 'Text extracted successfully', done: true  },
+                { label: 'Running AI quality analysis', done: false },
+                { label: 'Finding target roles for you', done: false },
+              ].map((step, i) => (
+                <div key={i} className="flex items-center gap-3 text-sm">
+                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                    step.done ? 'bg-green-500' : 'bg-blue-100'
+                  }`}>
+                    {step.done
+                      ? <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1 4l2 2 4-4" stroke="white" strokeWidth="1.2" strokeLinecap="round"/></svg>
+                      : <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                    }
+                  </div>
+                  <span className={step.done ? 'text-gray-700' : 'text-gray-400'}>{step.label}</span>
+                </div>
+              ))}
+            </div>
+           </div>
+              </div>
+            ) }
 
 
 
-
-
-
-
-
-
-
-
-
-
+{Status === 'ideal' &&
         <div >
           <div className="mb-8">
             <h2 className="text-[20px] font-semibold text-gray-900 mb-1 ">Upload your resume</h2>
@@ -245,20 +313,124 @@ const OnBoarding = () => {
           <button 
            onClick={handleSubmit}
             disabled={!file} className="text-sm text-white font-semibold bg-gray-900 w-full px-4 py-2 rounded-xl
-           hover:bg-gray-700 transition-colors disabled:opacity-50  "> Upload resume→ </button>
+           hover:bg-gray-700 transition-colors   "> Upload resume→ </button>
           <p className="text-xs text-center mt-4 cursor-pointer hover:text-gray-600"> You can do this later —<span  onClick={() => navigate('/dashboard')}
            className="text-blue-600"> go to dashboard</span></p>
         
         </div>
-    )}
+}
 
-</div>  {/*   card div  */}
-
-
-
-
+</div> 
+}
+{/*   card div  */}
 
 
+
+{Status === 'done' &&  (
+       <div className="w-full max-w-lg">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-4">
+           <div className="flex items-center">
+           <ScoreRing score={result?.score ?? 50}  />
+
+{/* <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M5 12l5 5L20 7" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div> */}
+    
+      <div className="flex flex-col justify-center ml-8">
+                <h2 className="text-base font-semibold text-gray-900 mb-0.5 mx-">
+                  {result?.score !== null ? 'Resume analyzed' : 'Resume uploaded'}
+                </h2>
+                <p className="text-sm text-gray-500">
+                  {result?.score !== null
+                    ? 'Here is what our AI found about your resume'
+                    : 'Your resume has been saved. You can now analyze jobs.'}
+                </p>
+              </div>
+           </div>
+           </div>
+
+
+          
+             {/* {result?.score !== null && ( */}
+               <div className="grid grid-cols-2 gap-4 mb-4"> 
+              <div className="bg-white border border-gray-200 rounded-xl p-4">
+                     <div className="flex items-center gap-2 mb-3">
+                       <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M2 5l2 2 4-4" stroke="#16a34a" strokeWidth="1.2" strokeLinecap="round"/>
+                      </svg>
+
+                    </div>
+                    <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide">What is strong</p>
+                  </div>
+                   {result?.strong.length === 0 ?  <p className="text-xs text-gray-400">No data</p> : ( 
+              <ul className="space-y-1.5">
+                      {result?.strong.map((s , i)=> 
+                      <li key={i} className="text-xs text-gary-600 gap-2 leading-relaxed"> 
+                      <span className="text-green-500 shrink-0 mt-0.5">•</span> {s}</li> 
+                      )}
+             </ul>)}
+              </div>
+            
+
+               <div className="bg-white border border-gray-200 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="w-5 h-5 bg-amber-100 rounded-full flex items-center justify-center">
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                        <path d="M5 2v4M5 7.5v.5" stroke="#d97706" strokeWidth="1.2" strokeLinecap="round"/>
+                      </svg>
+                    </div>
+                    <p className="text-xs text-gray-700 font-semibold uppercase tracking-wide">What to improve</p>
+                </div>
+             {result?.improve.length === 0 ?  <p className="text-xs text-gray-400">No data</p> : 
+             (
+             <ul> {result?.improve.map((s,i)=>
+              <li key={i} className="text-xs text-gary-600 gap-2 leading-relaxed"><span 
+              className="text-amber-500 shrink-0 mt-0.5">•</span>
+              {s}</li>
+             )}</ul>
+               )}
+               </div>
+      </div>
+
+
+                {/* {result?.targetRoles.length > 0 && (  */}
+                   <div className="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+                    <p className="text-xs font-semibold text-gray-700 uppercase tracking-wide mb-3">
+                    Roles you should target
+                  </p>
+
+                   
+                      <div className="flex flex-wrap gap-2">
+                        {result?.targetRoles.map((s,i)=>
+                          <span key={i} className=" text-sm bg-blue-50 text-blue-700 border border-blue-200 rounded-lg
+                          px-3 py-1.5  font-medium">{s}</span>
+                        )}
+                      </div>
+                </div> 
+
+
+                <div className="flex gap-3">
+                  <button  onClick={() => navigate('/dashboard')}
+                    className="flex-1 bg-gray-900 py-3 rounded-xl text-sm font-semibold text-white hover:bg-gray-700 transition-colors">
+                    Go to dashboard →
+                  </button>
+                  <button  onClick={() => navigate('/dashboard')}
+                      className="flex-1 bg-gray-900 py-3 rounded-xl text-sm font-semibold text-white hover:bg-gray-700 transition-colors">
+                     Analyze a job
+                  </button>
+                </div>
+
+                 <p className="text-center text-xs text-gray-400 mt-3">
+                    Want to update your resume?{' '}
+                    <span onClick={()=>{ setStatus('ideal'); setFile(null); setError(''); setResult(null)}
+                    } className="text-blue-600 cursor-pointer hover:underline"> Upload a new one</span>
+                 </p>
+
+       </div>
+)}
 
     </div> // main div 
   )

@@ -1,12 +1,12 @@
 import express from "express"
-import pdfparse from "pdf-parse"
-import Authmiddelware from "../middleware/authmiddelware"
-import Upload from "../middleware/multer"
+import Authorization from "../middleware/authmiddelware.js"
+import Upload from "../middleware/multer.js"
 import fs from "fs"
-import callAi from "../services/ai"
-import db from "../database"
-
-
+import callAi from "../services/ai.js"
+import db from "../database.js"
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const pdfparse = require("pdf-parse");
 
 const router = express.Router()
 
@@ -41,7 +41,7 @@ if(
 
 
 
-router.post("/upload" , Authmiddelware , Upload.single('resume'), async (req , res) =>{
+router.post("/upload" , Authorization , Upload.single('resume'), async (req , res) =>{
 
     if(!req.file){
         return res.status(400).json({
@@ -104,3 +104,5 @@ console.error('Resume upload error:', err)
 }
 
 } ) 
+
+export default router ;

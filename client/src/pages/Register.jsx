@@ -109,7 +109,8 @@ return (
                   value={user.email}
                  placeholder="example@gmail.com"
                  onChange={handleChange}
-          className=" w-full border border-gray-200 px-3 py-2.5 rounded-xl text-sm" outline-none focus:border-blue-400 transition-colors  />
+          className="w-full border border-gray-200 px-3 py-2.5 rounded-xl text-sm outline-none focus:border-blue-400 transition-colors "
+           />
        
     
          <label className="text-sm ">Password</label>

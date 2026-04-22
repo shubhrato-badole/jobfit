@@ -113,3 +113,8 @@ CREATE OR REPLACE TRIGGER trigger_users_updated_at
 CREATE OR REPLACE TRIGGER trigger_applications_updated_at
   BEFORE UPDATE ON applications
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+  ALTER TABLE users
+ADD COLUMN IF NOT EXISTS resume_score    INTEGER,
+ADD COLUMN IF NOT EXISTS resume_feedback JSONB,
+ADD COLUMN IF NOT EXISTS target_roles    JSONB;
