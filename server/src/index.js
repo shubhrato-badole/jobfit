@@ -9,7 +9,7 @@ import Analyzse from "./routes/jobanalysze.js"
 import Tracker from "./routes/tracker.js"
 import Dashboard from "./routes/dashboard.js" 
 import passport from "passport"
-
+import Jobsearch from "./routes/jobsearch.js"
 
 
 
@@ -31,7 +31,7 @@ app.use("/api/resume", Resume )
 app.use("/api/ai" , Analyzse )
 app.use("/api/tracker" , Tracker )
 app.use("/api/dashboard" , Dashboard )
-
+app.use("/api/jobs" , Jobsearch )
 
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err)

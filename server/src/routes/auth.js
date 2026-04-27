@@ -14,7 +14,6 @@ const cookies_options = ({
   httpOnly: true,
   secure: false,
   sameSite: 'lax',
-  maxAge: 30 * 60 * 1000
 })
 
 
