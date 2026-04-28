@@ -10,10 +10,10 @@ import { useNavigate } from "react-router-dom";
 
 
 
-const JobCard = ({ job, onSave }) => {
+const JobCard = ({ job, onSave , savedIds }) => {
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
-
+ const alreadySaved = savedIds?.has(job.id)
 
   const handleAnalyze = () => {
     navigate('/analyze', {
@@ -30,8 +30,8 @@ const JobCard = ({ job, onSave }) => {
         title: job.title,
         company: job.company,
         location: job.location,
-        jobUrl: job.url,
-        jobDescription: job.description
+        jobUrl: job.applyUrl,
+        jobDescription: job.jobdesc
       })
     } catch (err) {
       if (err.response?.status === 409) onSave(job.id)
@@ -42,6 +42,74 @@ const JobCard = ({ job, onSave }) => {
 
   return (
     <div className=" border rounded-xl p-4 py-2.5 border-gray-200 ">
+            <div className="flex items-start gap-3 mb-3">
+
+                {job.logo ?  
+                 <img src={job.logo} alt={job.company} className="w-9 h-9 rounded-xl border border-gray-200 shrink-0 "/> 
+                : <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-sm font-semibold text-gray-400">
+                 {job.company?.[0]} </div> }
+            
+
+                <div className="flex-1 min-w-0 ">
+                <h3 className="text-sm text-gray-900 font-semibold truncate  ">{job.title}</h3>
+                <p className="text-xs text-gray-500 truncate">{job.company}</p>
+                </div>
+
+             </div>
+
+
+          <div className="flex flex-wrap gap-2 mb-4 ">
+             {job.location && 
+              <span className="text-xs text-gray-500 flex items-center gap-1">
+               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+              <path d="M5.5 1a3 3 0 013 3c0 2-3 6-3 6S2.5 6 2.5 4a3 3 0 013-3z" stroke="#9ca3af" strokeWidth="1" strokeLinejoin="round"/>
+              <circle cx="5.5" cy="4" r="1" fill="#9ca3af"/>
+            </svg> {job.location}
+              </span>}
+
+
+             {job.isRemote && 
+             <span className="text-xs text-gray-500 
+             bg-gray-50 border border-gray-100 
+             rounded-xl px-2 py-0.5">
+              remote</span> }
+
+
+              {job.type && 
+              <span className="text-xs text-gray-500 
+             bg-gray-50 border border-gray-100 
+             rounded-xl px-2 py-0.5">{job.type}
+              </span> }
+
+              {job.minSalary && job.maxSalary && 
+              <span className="text-xs text-gray-500"> { job.salaryPeriod === 'YEAR'? `₹${Math.round(job.minSalary/100000)}–${Math.round(job.maxSalary/100000)} LPA` 
+              : `$${job.minSalary}–${job.maxSalary}`} </span> }
+          </div>
+
+          
+     <div>
+      {job.jobDesc && 
+      <p className="text-xs text-gray-500 "> {job.jobDesc.slice(0, 160)}... </p> }
+     </div>
+         
+       <div className="flex gap-3 mt-4">
+            <button onClick={handleAnalyze} className="text-white  text-xs font-semibold bg-gray-900 px-3 py-1.5 rounded-xl hover:bg-gray-700 transiction-color ">
+             Analyze match →
+             </button>
+             <button onClick={handleSave} 
+              disabled={saving || alreadySaved}
+             className={`text-xs font-semibold  px-3 py-1.5 rounded-xl transiction-color ${alreadySaved ? 'bg-green-100 border border-green-300 text-green-500 ' :`bg-gray-100 border border-gray-300 text-gray-500` } ` }>
+             {alreadySaved ?  '✓ Saved' : saving ? '...': 'saved'}
+            </button>
+
+       <a href={job.applyUrl} className="text-xs bg-white border rounded-xl border-gray-300 px-2 py-1"> Apply ↗</a>
+        
+       </div>
+
+
+
+
+
 
     </div>
   )
@@ -181,8 +249,8 @@ const Jobsearch = () => {
 
 
       {searched && !loading && jobs.length > 0 && (
-        <p>
-          Found <span>{jobs.length}</span> jobs for "{query}"
+        <p className="text-sm text-gray-900 my-5 ">
+          Found <span>{jobs.length}</span> jobs for {query}
           {location ? ` in ${location}` : ''}
         </p>
       )}
