@@ -17,10 +17,11 @@ const Analysze = () => {
 
 
   const jobData = location.state || {}
+  console.log(jobData)
   const [form, setForm] = useState({
     company: jobData.company || '',
-    role: jobData.role || '',
-    jobDesc: jobData.jobDesc || ''
+    role: jobData.title || '',
+    jobDesc: jobData.jobDesc|| ''
 
   })
 

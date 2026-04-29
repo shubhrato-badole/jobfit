@@ -1,5 +1,6 @@
 
 import { Link , Navigate , useLocation, useNavigate} from "react-router-dom"
+import { useState , useRef, useEffect } from "react"
 import {useAuth} from "../pages/AuthContext"
 import axios from "axios"
 
@@ -8,6 +9,8 @@ const Navebar = ()=>{
 const {logout , user} = useAuth()
 const navigate = useNavigate();
 const location = useLocation();
+const [open , setopen] = useState(false)
+ const menuRef = useRef(null)
 
 const Activelocation = (path) => location.pathname === path 
 const pathname = location.pathname;
@@ -18,6 +21,20 @@ const HandleLogout = async () =>{
 
 }
 
+useEffect(()=>{
+  const handleClickOutside = (e) => {
+    if (!menuRef.current.contains(e.target)) {
+        setopen(false)
+      }
+    }
+      document.addEventListener("mousedown", handleClickOutside)
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  
+ 
+} , [])
 
 
   const appLinks = [
@@ -58,8 +75,20 @@ if (user){
    ))
    }
    </div>
+
    <div className="flex item-flex gap-3">
-    <div className="text-ms text-gray-600 bg-gray-200 px-4 py-2 rounded-full">{initials}</div>
+    <div className="relative" ref={menuRef}>
+    <button onClick={()=> setopen(prev => !prev)} className="text-ms text-gray-600 bg-gray-200 px-4 py-2 rounded-full">{initials}</button>
+      
+     
+      {open &&     <div className="absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-lg z-50">
+        <button onClick={() => {
+        navigate("/profile")
+        setopen(false)
+      }} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100 rounded-lg">profile</button>    </div>
+}
+      </div>
+
 
  <button
               onClick={HandleLogout}

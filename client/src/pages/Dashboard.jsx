@@ -19,7 +19,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null)
 
   const { user } = useAuth() || {}
- console.log(user)
+ 
 
 
   useEffect(() => {
@@ -27,7 +27,7 @@ const Dashboard = () => {
       try {
         const { data } = await API.get("/api/dashboard/user")
         setData(data)
-        console.log(data)
+  
         
       } catch (err) {
         setError('Could not load dashboard data')

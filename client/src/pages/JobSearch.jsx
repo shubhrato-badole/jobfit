@@ -17,10 +17,11 @@ const JobCard = ({ job, onSave , savedIds }) => {
 
   const handleAnalyze = () => {
     navigate('/analyze', {
-      compnay: job.company,
+       state: {
+      company: job.company,
       title: job.title,
-      description: job.description,
-    })
+      jobDesc: job.jobDesc,
+   } })
   }
 
   const handleSave = async () => {
@@ -31,7 +32,10 @@ const JobCard = ({ job, onSave , savedIds }) => {
         company: job.company,
         location: job.location,
         jobUrl: job.applyUrl,
-        jobDescription: job.jobdesc
+        jobDescription: job.jobdesc,
+       
+     
+        
       })
     } catch (err) {
       if (err.response?.status === 409) onSave(job.id)

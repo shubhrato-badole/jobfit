@@ -13,6 +13,7 @@ import Tracker from "./pages/Tracker"
 import Profile from "./pages/Profile"
 import Footer from "./components/Footer"
 import Navebar from "./components/Navebar"
+import Saved from "./pages/saved"
 
 
 
@@ -42,6 +43,7 @@ return(
       <Route path="/analyze" element= {<ProtectedRoute> <Analysze/> </ProtectedRoute> }/>
      <Route path="/Tracker" element= {<ProtectedRoute> <Tracker/> </ProtectedRoute> }/>
       <Route path="/Profile" element= {<ProtectedRoute> <Profile/> </ProtectedRoute> }/>
+       <Route path="/saved" element= {<ProtectedRoute> <Saved/> </ProtectedRoute> }/>
     </Routes>
     </Layout>
 )
