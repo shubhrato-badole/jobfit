@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext"
-import API from "../components/Api"
+import API from "../Components/Api"
 
 const Profile = () => {
 
@@ -35,19 +35,20 @@ const Profile = () => {
 
 
   useEffect(() => {
-    const getProfile = async () => {
+    const fetchProfile = async () => {
       try {
         const { data } = await API.get("/api/profile")
         setProfile(data.user)
         setName(data.user.name)
-        setEmail(data.user.eamil)
+        setEmail(data.user.email)
       } catch (err) {
 
       } finally {
         setLoading(false)
       }
-    }
-  })
+     }
+     fetchProfile()
+  },[])
 
 
   const handleProfileChanges = async (e) => {
@@ -57,7 +58,7 @@ const Profile = () => {
     setSaveMsg('')
     try {
       const { data } = await API.patch(`api/profile/change`, { name, email })
-      setProfile(prev => ({ ...prev, name: data.user.name, email: data.user.email }))
+      setProfile(prev => ({ ...prev, name: data.user.name , email: data.user.email }))
       setSaveMsg('Profile updated successfully')
 
     } catch (err) {
@@ -111,7 +112,7 @@ const Profile = () => {
 
 const formatData = (date) =>{
    if(!date) return '' ;
-   new Date(date).toLocaleDateString("en-IN" , {
+  return new Date(date).toLocaleDateString("en-IN" , {
     day: "numeric",
     month: "short",
     year:"numeric"
@@ -141,15 +142,15 @@ const formatData = (date) =>{
       <div className="flex items-center gap-4 border border-gray-200 rounded-2xl bg-white p-5 mb-5  ">
         <div className="w-14 h-14 bg-blue-50 rounded-full 
        text-blue-700 border border-blue-200 flex items-center justify-center font-semibold text-xl shrink-0 ">
-          {profile?.name?.[0]?.toUpperCase()} S
+          {profile?.name?.[0]?.toUpperCase()} 
         </div>
         <div className="flex-1 flex-col ">
           <p className="text-lg text-gray-900 font-semibold truncate">{profile.name}</p>
-          <p className="text-sm text-gray-500 truncate">{profile.eamil}</p>
-          <p className="text-sm text-gray-400">member since {formatData(profile.created_at)}</p>
+          <p className="text-sm text-gray-500 truncate mb-0.5">{profile.email}</p>
+          <p className="text-xs text-gray-500">Member since {formatData(profile.createdAt)}</p>
         </div>
         <div className=" text-right shrink-0">
-          <p className="text-2xl text-gray-900 font-semibold ">{profile.total}</p>
+          <p className="text-2xl text-gray-900 font-semibold px-2 ">{profile.total}</p>
           <p className="text-xs text-gray-400">applications</p>
         </div>
       </div>
@@ -160,7 +161,7 @@ const formatData = (date) =>{
       <div className="border border-gray-200 bg-white rounded-2xl p-5 mb-5">
         <h2 className="text-sm text-gray-900 font-semibold mb-4 ">Resume</h2>
        
-        {profile?.hasresume ?
+        {profile?.hasResume ?
           <div className="flex gap-3 items-center ">
             <div className="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center shrink-0">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -170,7 +171,7 @@ const formatData = (date) =>{
 
             <div className="flex-1 items-center" >
               <p className="text-sm text-gray-900 font-semibold">Resume uploaded</p>
-              <p className="text-xs text-gray-500 ">1 apr 2026 </p>
+              <p className="text-xs text-gray-500 ">Last uploaded {formatData(profile.resumeUploadedAt)} </p>
             </div>
            <button onClick={()=> navigate("/onboarding")}
             className="text-xs text-gray-900 border border-gray-200 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
@@ -205,7 +206,7 @@ const formatData = (date) =>{
                  {profile?.targetRoles?.map((t ,i) => (
                  <span key={i} className=" text-xs px-2.5 py-1 rounded-xl bg-blue 
                  text-blue-600 border border-blue-blue-200 font-medium">
-                      {profile?.targetRoles}
+                      {t}
                 </span>
                   
                  ))}
@@ -246,7 +247,7 @@ const formatData = (date) =>{
           )}
 
 
-              <button onClick={()=> navigate("/onbording")}
+              <button type="submit"
                 disabled={saving || (name === profile?.name && email === profile?.email)}
             className="text-sm text-white border border-gray-200 bg-gray-900 px-5 py-2.5 rounded-lg hover:bg-gray-700 transition-colors">
             { saving ? 'Saving...' : 'Save changes'}
