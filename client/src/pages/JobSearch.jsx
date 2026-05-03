@@ -1,4 +1,5 @@
 import API from "../components/Api";
+import { useEffect } from "react";
 import { useState, } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -144,19 +145,49 @@ const Jobsearch = () => {
 
 
 
-useEffect(() => {
-  const fetchSaved = async () => {
-    try {
-      const { data } = await API.get('/api/jobs/saved')
-      const ids = data.jobs.map(job => job.id)
-      setSavedIds(ids)
-    } catch (err) {
-      console.error(err)
+  useEffect(() => {
+    if (jobs.length > 0 || searched) {
+      sessionStorage.setItem('jobSearch_jobs', JSON.stringify(jobs));
+      sessionStorage.setItem('jobSearch_query', query);
+      sessionStorage.setItem('jobSearch_location', location);
+      sessionStorage.setItem('jobSearch_searched', searched ? 'true' : 'false');
     }
-  }
+  }, [jobs, query, location, searched]);
 
-  fetchSaved()
-}, [])
+
+  useEffect(() => {
+    const savedQuery = sessionStorage.getItem('jobSearch_query');
+    const savedLocation = sessionStorage.getItem('jobSearch_location');
+    const savedSearched = sessionStorage.getItem('jobSearch_searched');
+    const savedJobs = sessionStorage.getItem('jobSearch_jobs');
+
+    if (savedQuery) setQuery(savedQuery);
+    if (savedLocation) setLocation(savedLocation)
+    if (savedJobs && savedSearched === 'true') {
+      setSearched(true)
+      setJobs(JSON.parse(savedJobs))
+    }
+  }, []);
+
+
+
+
+
+
+
+  useEffect(() => {
+    const fetchSaved = async () => {
+      try {
+        const { data } = await API.get('/api/jobs/saved')
+        const ids = data.jobs.map(job => job.id)
+        setSavedIds(ids)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    fetchSaved()
+  }, [])
 
 
 
@@ -184,7 +215,7 @@ useEffect(() => {
       }
 
     } catch (err) {
-       console.error(err)
+      console.error(err)
       setError(err.response?.data?.error || 'Failed to fetch jobs. Please try again.')
       setJobs([])
     }
