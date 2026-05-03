@@ -1,4 +1,3 @@
-import Recat from "react";
 import API from "../components/Api";
 import { useState, } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,18 +9,21 @@ import { useNavigate } from "react-router-dom";
 
 
 
-const JobCard = ({ job, onSave , savedIds }) => {
+const JobCard = ({ job, onSave, savedIds }) => {
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
- const alreadySaved = savedIds.includes(job.id)
+  const alreadySaved = savedIds.includes(String(job.id))
+
+
 
   const handleAnalyze = () => {
     navigate('/analyze', {
-       state: {
-      company: job.company,
-      title: job.title,
-      jobDesc: job.jobDesc,
-   } })
+      state: {
+        company: job.company,
+        title: job.title,
+        jobDesc: job.jobDesc,
+      }
+    })
   }
 
   const handleSave = async () => {
@@ -33,10 +35,10 @@ const JobCard = ({ job, onSave , savedIds }) => {
         company: job.company,
         location: job.location,
         jobUrl: job.applyUrl,
-        jobDescription: job.jobdesc,
-         
+        jobDescription: job.jobDesc,
+
       })
-       onSave(job.id)
+      onSave(job.id)
     } catch (err) {
       if (err.response?.status === 409) onSave(job.id)
     } finally {
@@ -46,69 +48,69 @@ const JobCard = ({ job, onSave , savedIds }) => {
 
   return (
     <div className=" border rounded-xl p-4 py-2.5 border-gray-200 ">
-            <div className="flex items-start gap-3 mb-3">
+      <div className="flex items-start gap-3 mb-3">
 
-                {job.logo ?  
-                 <img src={job.logo} alt={job.company} className="w-9 h-9 rounded-xl border border-gray-200 shrink-0 "/> 
-                : <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-sm font-semibold text-gray-400">
-                 {job.company?.[0]} </div> }
-            
-
-                <div className="flex-1 min-w-0 ">
-                <h3 className="text-sm text-gray-900 font-semibold truncate  ">{job.title}</h3>
-                <p className="text-xs text-gray-500 truncate">{job.company}</p>
-                </div>
-
-             </div>
+        {job.logo ?
+          <img src={job.logo} alt={job.company} className="w-9 h-9 rounded-xl border border-gray-200 shrink-0 " />
+          : <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 text-sm font-semibold text-gray-400">
+            {job.company?.[0]} </div>}
 
 
-          <div className="flex flex-wrap gap-2 mb-4 ">
-             {job.location && 
-              <span className="text-xs text-gray-500 flex items-center gap-1">
-               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-              <path d="M5.5 1a3 3 0 013 3c0 2-3 6-3 6S2.5 6 2.5 4a3 3 0 013-3z" stroke="#9ca3af" strokeWidth="1" strokeLinejoin="round"/>
-              <circle cx="5.5" cy="4" r="1" fill="#9ca3af"/>
+        <div className="flex-1 min-w-0 ">
+          <h3 className="text-sm text-gray-900 font-semibold truncate  ">{job.title}</h3>
+          <p className="text-xs text-gray-500 truncate">{job.company}</p>
+        </div>
+
+      </div>
+
+
+      <div className="flex flex-wrap gap-2 mb-4 ">
+        {job.location &&
+          <span className="text-xs text-gray-500 flex items-center gap-1">
+            <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+              <path d="M5.5 1a3 3 0 013 3c0 2-3 6-3 6S2.5 6 2.5 4a3 3 0 013-3z" stroke="#9ca3af" strokeWidth="1" strokeLinejoin="round" />
+              <circle cx="5.5" cy="4" r="1" fill="#9ca3af" />
             </svg> {job.location}
-              </span>}
+          </span>}
 
 
-             {job.isRemote && 
-             <span className="text-xs text-gray-500 
+        {job.isRemote &&
+          <span className="text-xs text-gray-500 
              bg-gray-50 border border-gray-100 
              rounded-xl px-2 py-0.5">
-              remote</span> }
+            remote</span>}
 
 
-              {job.type && 
-              <span className="text-xs text-gray-500 
+        {job.type &&
+          <span className="text-xs text-gray-500 
              bg-gray-50 border border-gray-100 
              rounded-xl px-2 py-0.5">{job.type}
-              </span> }
+          </span>}
 
-              {job.minSalary && job.maxSalary && 
-              <span className="text-xs text-gray-500"> { job.salaryPeriod === 'YEAR'? `₹${Math.round(job.minSalary/100000)}–${Math.round(job.maxSalary/100000)} LPA` 
-              : `$${job.minSalary}–${job.maxSalary}`} </span> }
-          </div>
+        {job.minSalary && job.maxSalary &&
+          <span className="text-xs text-gray-500"> {job.salaryPeriod === 'YEAR' ? `₹${Math.round(job.minSalary / 100000)}–${Math.round(job.maxSalary / 100000)} LPA`
+            : `$${job.minSalary}–${job.maxSalary}`} </span>}
+      </div>
 
-          
-     <div>
-      {job.jobDesc && 
-      <p className="text-xs text-gray-500 "> {job.jobDesc.slice(0, 160)}... </p> }
-     </div>
-         
-       <div className="flex gap-3 mt-4">
-            <button onClick={handleAnalyze} className="text-white  text-xs font-semibold bg-gray-900 px-3 py-1.5 rounded-xl hover:bg-gray-700 transiction-color ">
-             Analyze match →
-             </button>
-             <button onClick={handleSave} 
-              disabled={saving || alreadySaved}
-             className={`text-xs font-semibold  px-3 py-1.5 rounded-xl transiction-color ${alreadySaved ? 'bg-green-100 border border-green-300 text-green-500 ' :`bg-gray-100 border border-gray-300 text-gray-500` } ` }>
-             {alreadySaved ?  '✓ Saved' : saving ? '...': 'saved'}
-            </button>
 
-       <a href={job.applyUrl} className="text-xs bg-white border rounded-xl border-gray-300 px-2 py-1"> Apply ↗</a>
-        
-       </div>
+      <div>
+        {job.jobDesc &&
+          <p className="text-xs text-gray-500 "> {job.jobDesc.slice(0, 160)}... </p>}
+      </div>
+
+      <div className="flex gap-3 mt-4">
+        <button onClick={handleAnalyze} className="text-white  text-xs font-semibold bg-gray-900 px-3 py-1.5 rounded-xl hover:bg-gray-700 transiction-color ">
+          Analyze match →
+        </button>
+        <button onClick={handleSave}
+          disabled={saving || alreadySaved}
+          className={`text-xs font-semibold  px-3 py-1.5 rounded-xl transition-colors ${alreadySaved ? 'bg-green-100 border border-green-300 text-green-500 ' : `bg-gray-100 border border-gray-300 text-gray-500`} `}>
+          {alreadySaved ? '✓ Saved' : saving ? 'saving...' : 'saved'}
+        </button>
+
+        <a href={job.applyUrl} className="text-xs bg-white border rounded-xl border-gray-300 px-2 py-1"> Apply ↗</a>
+
+      </div>
 
 
 
@@ -141,6 +143,26 @@ const Jobsearch = () => {
   const [savedIds, setSavedIds] = useState([]);
 
 
+
+useEffect(() => {
+  const fetchSaved = async () => {
+    try {
+      const { data } = await API.get('/api/jobs/saved')
+      const ids = data.jobs.map(job => job.id)
+      setSavedIds(ids)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  fetchSaved()
+}, [])
+
+
+
+
+
+
   const handleSearch = async (e) => {
     e?.preventDefault();
     if (!query.trim()) return setError("Please enter a job title or keyword")
@@ -155,13 +177,14 @@ const Jobsearch = () => {
       if (location.trim()) param.append('location', location.trim())
 
       const { data } = await API.get(`/api/jobs/search?${param}`)
-      setJobs(data.jobs)
+      setJobs(data?.jobs || [])
 
       if (data.jobs?.length === 0) {
         setError('No jobs found. Try a different search term or location.')
       }
 
     } catch (err) {
+       console.error(err)
       setError(err.response?.data?.error || 'Failed to fetch jobs. Please try again.')
       setJobs([])
     }
@@ -172,9 +195,11 @@ const Jobsearch = () => {
   }
 
   const handleSave = (id) => {
-    setSavedIds(prev => {if (prev.includes(id)) return prev
-    return [...prev, id] })
-    }
+    setSavedIds(prev => {
+      if (prev.includes(id)) return prev
+      return [...prev, id]
+    })
+  }
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8">
@@ -188,7 +213,7 @@ const Jobsearch = () => {
             <div className="flex-1">
               <label className=" block text-sm text-gray-900 font-medium mb-1.5">Job title or skill</label>
               <input
-                className=" w-full text-sm tex-gray-400 bg-gray-200 px-3 py-2.5 border border-gray-300 rounded-xl
+                className=" w-full text-sm text-gray-400 bg-gray-50 px-3 py-2.5 border border-gray-300 rounded-xl
          text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400 transition-colors"
                 type="text"
                 placeholder="React developer, Full stack, Node.js..."
@@ -200,7 +225,7 @@ const Jobsearch = () => {
             <div className="w-48">
               <label className="text-sm text-gray-900 font-medium m-4">Location (optional)</label>
               <input
-                className=" w-full text-sm tex-gray-400 bg-gray-200 px-3 py-2.5 border border-gray-300 rounded-xl
+                className=" w-full text-sm tex-gray-400 bg-gray-50 px-3 py-2.5 border border-gray-300 rounded-xl
          text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400 transition-colors"
                 type="text"
                 placeholder="Mumbai, Remote..."
@@ -214,7 +239,7 @@ const Jobsearch = () => {
               <button
                 disabled={loading}
                 className=" flex items-center gap-2 mt-5 justify-content
-        px-6 py-2.5 tetx-sm text-white rounded-xl 
+        px-6 py-2.5 text-sm text-white rounded-xl 
         font-semibold bg-gray-900
         hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed
         whitespace-nowrap"
@@ -235,7 +260,7 @@ const Jobsearch = () => {
 
             {['React developer', 'Full stack Node',
               'Frontend engineer', 'JavaScript developer'].map((item => (
-                <button type="button" key={item} onClick={() => { setQuery(item) ; setError('') }}
+                <button type="button" key={item} onClick={() => { setQuery(item); setError('') }}
                   className="text-xs text-gray-900 px-3 py-1 border border-gray-300 rounded-xl
   hover:bg-gray-500  hover:text-white transition-colors ">
                   {item}</button>

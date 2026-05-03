@@ -27,8 +27,9 @@ router.get("/search", Authorization, async (req, res) => {
             }
         });
 
-        console.log("STATUS:", response.status);
+        console.log("STATUS", response.status);
         const data = await response.json();
+        if (!response.ok) throw new Error(data?.message || 'API error');
           
           
              if (!response.ok) {
@@ -60,10 +61,8 @@ router.get("/search", Authorization, async (req, res) => {
 
     } catch (err) {
         
-        console.log("REAL API ERROR:", err.message)
-        return res.status(response.status).json({
-            error: data?.message || 'External API failed'
-        })
+    console.error("JSearch error:", err.message);
+  res.status(500).json({ error: 'Failed to fetch jobs. Please try again.' });
     }
 })
 
@@ -90,16 +89,16 @@ router.post("/saved", Authorization, async (req, res) => {
         }
 
 
-        const { data } = await db.query(`INSERT INTO saved_jobs
+        const result = await db.query(`INSERT INTO saved_jobs
         (user_id , title ,company , job_desc , source_url, location) 
         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
             [req.user.id, title, company, jobDescription || null, jobUrl || null, location || null])
         
 
-        
+        const savedId = result.rows[0].id;
             res.status(201).json({
             message: 'Job saved successfully',
-            id: data.rows[0].id
+            id:savedId
         })
 
 
